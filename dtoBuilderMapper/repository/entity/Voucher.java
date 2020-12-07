@@ -77,4 +77,8 @@ public class Voucher {
 
     this.updated = new Date();
   }
+
+  public Voucher update(VoucherDto.UpdateReq reqDto, Configure voucherTypeConfig, Date updated) {
+    return VoucherMapper.INSTANCE.update(this, reqDto, voucherTypeConfig, updated);
+  }
 }

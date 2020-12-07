@@ -6,6 +6,14 @@ public class VoucherService {
 	VoucherRepository voucherRepository;
   @Autowired
 	ConfigureRepository configureRepository;
+	
+	public Voucher getVoucherInfoById(String id) throws Exception {
+		return voucherRepository.findById(id);
+	}
+
+	public List<Voucher> getVoucherInfo() throws Exception {
+		return voucherRepository.findByCenterIdAndStateOrderByCreatedDesc(FMSFactory.getCenterId(), GlobalVariable.ENABLE);
+	}
 
 	public VoucherDto.CreateRes saveVoucherInfo(VoucherDto.CreateReq reqDto) {
 		Configure voucherType = configureRepository.findByConfigName(reqDto.getVoucherType());
@@ -18,8 +26,16 @@ public class VoucherService {
 		Configure voucherType = configureRepository.findByConfigName(reqDto.getVoucherType());
 		Voucher targetVoucher = getVoucherInfoById(reqDto.getId());
 
-		targetVoucher.updateFromReqDto(reqDto, voucherType);
+		targetVoucher.update(reqDto, voucherType, new Date());
 
 		return VoucherDto.UpdateRes.of(voucherRepository.save(targetVoucher));
   }
+
+  public Voucher disableVoucher(String voucherId) throws Exception{
+		Voucher voucher = voucherRepository.findById(voucherId);
+		voucher.setState(GlobalVariable.DISABLE);
+		voucher.setUpdated(new Date());
+
+		return voucherRepository.save(voucher);
+	}
 }
